@@ -27,7 +27,9 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
+    - run: ls
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: WebscraperTVL
+        path: /
