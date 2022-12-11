@@ -17,6 +17,9 @@ class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
 
+        string path = Directory.GetCurrentDirectory();
+        Console.WriteLine(path);
+
 
         try
         {
