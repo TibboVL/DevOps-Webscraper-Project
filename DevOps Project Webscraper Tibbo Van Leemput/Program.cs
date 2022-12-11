@@ -17,28 +17,24 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
             String GlobalPath = Directory.GetCurrentDirectory();
 
-            if (Directory.Exists(GlobalPath + @"\Downloads"))
-            {
-                    Console.WriteLine("Directory already exists");
-            } else
+            if (!Directory.Exists(GlobalPath + @"\Downloads"))
             {
                 Directory.CreateDirectory(GlobalPath + @"\Downloads");
             }
 
-            if (Directory.Exists(GlobalPath + @"\Json"))
-            {
-                Console.WriteLine("Directory already exists");
-            }
-            else
+            if (!Directory.Exists(GlobalPath + @"\Json"))
             {
                 Directory.CreateDirectory(GlobalPath + @"\Json");
             }
 
-            string DownloadPath = GlobalPath + @"\Downloads";
-            string JsonPath = GlobalPath + @"\Json";
-
-
-            
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n---------------------------------------------------------");
+            Console.WriteLine("To be able to use the download functionality of this application\nyou must have YOUTUBEDLP AND FFMPEG installed and added to your path!!");
+            Console.WriteLine("Youtubedlp: https://github.com/yt-dlp/yt-dlp");
+            Console.WriteLine("ffmpeg: https://phoenixnap.com/kb/ffmpeg-windows");
+            Console.WriteLine("---------------------------------------------------------\n");
+            Console.ResetColor();
+            Thread.Sleep(1000);
 
 
             try
@@ -575,27 +571,22 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
             }
             catch
             {
-                //Console.Clear();
-
-
+                // if anything goes wrong let the user know and restart the app
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("\n-----------------------------------------------");
                 Console.WriteLine("Oops! it seems something went wrong somewhere?!");
                 Console.WriteLine("-----------------------------------------------\n");
                 Console.ResetColor();
 
-                Console.Write("Taking you back to the menu in 10 seconds");
+                Console.WriteLine("Taking you back to the menu in 15 seconds");
 
-                for (int i = 10; i >= 0; i--)
+                for (int i = 15; i >= 0; i--)
                 {
                     Console.Write(".");
                     Thread.Sleep(1000);
                 }
 
                 Main(args);
-
-
-                //TODO
 
             }
 
