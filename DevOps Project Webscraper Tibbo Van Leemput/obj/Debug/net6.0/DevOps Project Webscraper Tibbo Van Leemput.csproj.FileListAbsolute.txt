@@ -1,0 +1,21 @@
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.csproj.AssemblyReference.cache
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.AssemblyInfoInputs.cache
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.AssemblyInfo.cs
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.csproj.CoreCompileInputs.cache
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\selenium-manager\linux\selenium-manager
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\selenium-manager\macos\selenium-manager
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\selenium-manager\windows\selenium-manager.exe
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.exe
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.deps.json
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.runtimeconfig.json
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.dll
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.pdb
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\bin\Debug\net6.0\WebDriver.dll
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.csproj.CopyComplete
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.dll
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\refint\DevOps Project Webscraper Tibbo Van Leemput.dll
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.pdb
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\DevOps Project Webscraper Tibbo Van Leemput.genruntimeconfig.cache
+C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\obj\Debug\net6.0\ref\DevOps Project Webscraper Tibbo Van Leemput.dll

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "nrGD0UpoWgKxRH4JyiLwlsUubRWPLRR1FD3Vht3ZYtsrieCkiN7huXR8abR1dLKK5xq79wUrLJZyqojJMHCQ5g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Tibbo\\source\\repos\\DevOps Project Webscraper Tibbo Van Leemput\\DevOps Project Webscraper Tibbo Van Leemput\\DevOps Project Webscraper Tibbo Van Leemput.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Tibbo\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\Tibbo\\.nuget\\packages\\selenium.webdriver\\4.7.0\\selenium.webdriver.4.7.0.nupkg.sha512",
+    "C:\\Users\\Tibbo\\.nuget\\packages\\selenium.webdriver.chromedriver\\108.0.5359.7100\\selenium.webdriver.chromedriver.108.0.5359.7100.nupkg.sha512"
+  ],
+  "logs": []
+}
