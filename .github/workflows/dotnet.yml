@@ -32,4 +32,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: WebscraperTVL
-        path: "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0/DevOps Project Webscraper Tibbo Van Leemput.exe"
+        path: "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0/*"
