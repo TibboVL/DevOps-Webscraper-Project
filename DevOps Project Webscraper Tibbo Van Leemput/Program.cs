@@ -5,8 +5,6 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text.Json;
 
-
-
 namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 {
     class Program
@@ -16,12 +14,10 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
             Console.OutputEncoding = Encoding.UTF8;
 
             String GlobalPath = Directory.GetCurrentDirectory();
-
             if (!Directory.Exists(GlobalPath + @"\Downloads"))
             {
                 Directory.CreateDirectory(GlobalPath + @"\Downloads");
             }
-
             if (!Directory.Exists(GlobalPath + @"\Json"))
             {
                 Directory.CreateDirectory(GlobalPath + @"\Json");
@@ -32,15 +28,39 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
             Console.WriteLine("To be able to use the download functionality of this application\nyou must have YOUTUBEDLP AND FFMPEG installed and added to your path!!");
             Console.WriteLine("Youtubedlp: https://github.com/yt-dlp/yt-dlp");
             Console.WriteLine("ffmpeg: https://phoenixnap.com/kb/ffmpeg-windows");
+            Console.WriteLine("\nDepending on your terminal you may see missing symbols,\nto fix this use the new windows Terminal");
             Console.WriteLine("---------------------------------------------------------\n");
             Console.ResetColor();
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
 
+            
+
+            static void WriteInColor(string message = "No message provided", string color = "Grey", bool NewLine = true, bool Clear = false)
+            {
+                if (Clear)
+                {
+                    Console.Clear();
+                }
+                ConsoleColor[] consoleColors = (ConsoleColor[])ConsoleColor.GetValues(typeof(ConsoleColor));
+                for (int i = 0; i < consoleColors.Length; i++) { 
+                    if (color.Equals(consoleColors[i].ToString())) {
+                        Console.ForegroundColor = consoleColors[i];
+
+                        if (NewLine)
+                        {
+                            Console.WriteLine(message);
+                        } else
+                        {
+                            Console.Write(message);
+                        }
+                        Console.ResetColor();
+                    }
+                }
+            }
 
             try
             {
                 ShowMenu();
-
                 static void Selections(string Selection)
                 {
                     switch (Selection)
@@ -67,8 +87,9 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                             Environment.Exit(0);
                             break;
                         default:
+                            Console.Clear();
+                            WriteInColor("\"" + Selection + "\" is not a valid option!", "Red");
                             ShowMenu();
-                            Console.WriteLine("Invalid option!");
                             break;
                     }
                     ShowMenu();
@@ -85,35 +106,25 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     Console.WriteLine("4: Scrapen van de basisdata van 5 recentste videos");
                     Console.WriteLine("5: Scrapen van 5 recentste jobs op ictjobs.be");
                     Console.WriteLine("Q: Exit");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("\n(Repetition of same task can cause websites to temporary\nlimit/block traffic which causes the script issues!)");
-                    Console.ResetColor();
+                    WriteInColor("\n(Repetition of same task can cause websites to temporary\nlimit/block traffic which causes the script issues!)", "Yellow");
                     Console.WriteLine("--------------------------------------------------------\n");
 
                     var response = Console.ReadLine();
-                    Console.Clear();
                     Selections(response.ToString());
                 }
 
 
                 static void SaveToJson(List<List<String>> ListOfLists, String KindOfData)
                 {
-
                     DateTime now = DateTime.Now;
-                    var partOfFilename = now.ToString().Replace("/", "").Replace(":", "").Replace(" ", "");
-
-                    string path = Directory.GetCurrentDirectory() + @"\Json\" + KindOfData + partOfFilename + ".json";
-                    //var path = @"C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\Json\" + KindOfData + partOfFilename + ".json";
-
-
-
-                    Console.WriteLine("\nSaving data to JSON as " + KindOfData + partOfFilename + "\n");
+                    string partOfFilename = now.ToString().Replace("/", "").Replace(":", "").Replace(" ", ""); //ensure song names do not contain characters windows does not allow
+                    string filename = KindOfData + " - " + partOfFilename;
+                    string path = Directory.GetCurrentDirectory() + @"\Json\" + filename + ".json";
+                    WriteInColor("\nSaving data to JSON as \"" + filename + "\"\n", "Blue");
 
                     if (KindOfData == "Youtube")
                     {
-
-                        List<YouTube> _data = new List<YouTube>();
-
+                        List<YouTube> _data = new();
                         foreach (var List in ListOfLists)
                         {
                             _data.Add(new YouTube()
@@ -124,15 +135,12 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                                 channel = List[3]
                             });
                         }
-
                         string json = JsonSerializer.Serialize(_data);
                         File.WriteAllText(path, json);
                     }
                     else if (KindOfData == "Jobs")
                     {
-
-                        List<Jobs> _JobData = new List<Jobs>();
-
+                        List<Jobs> _JobData = new();
                         foreach (var List in ListOfLists)
                         {
                             _JobData.Add(new Jobs()
@@ -144,15 +152,12 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                                 PageLink = List[4]
                             });
                         }
-
                         string json = JsonSerializer.Serialize(_JobData);
                         File.WriteAllText(path, json);
                     }
-                    else if (KindOfData == "Songs")
+                    else if (KindOfData == "MNMSongs" || KindOfData == "SpotifySongs")
                     {
-
-                        List<Songs> _SongData = new List<Songs>();
-
+                        List<Songs> _SongData = new();
                         foreach (var List in ListOfLists)
                         {
                             _SongData.Add(new Songs()
@@ -161,13 +166,9 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                                 Artist = List[1],
                             });
                         }
-
                         string json = JsonSerializer.Serialize(_SongData);
                         File.WriteAllText(path, json);
                     }
-
-
-
                 }
 
                 static void GetJobs()
@@ -178,41 +179,37 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     var driver = new ChromeDriver(chromeOptions);
                     //var driver = new ChromeDriver();
 
-                    Console.Clear();
-                    Console.WriteLine("Scrapen van 5 recentste jobs op ictjobs.be");
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.Write("Please enter a search term here: ");
+                    WriteInColor("Scrapen van 5 recentste jobs op ictjobs.be", "White", true, true);
+                    WriteInColor("Please enter a search term here: ", "Magenta", false);
                     String SearchTerm = Console.ReadLine();
-                    while (SearchTerm == null)
+                    while (SearchTerm == "" || SearchTerm == " ")
                     {
+                        WriteInColor("Please enter a search term here: ", "Magenta", false);
                         SearchTerm = Console.ReadLine();
                     }
-
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Getting 5 most recent jobs");
-                    Console.ResetColor();
-
-
+                    WriteInColor("Getting 5 most recent jobs", "Green");
+     
 
                     driver.Navigate().GoToUrl("https://www.ictjob.be/en/search-it-jobs?keywords=" + SearchTerm);
-
                     var ResultList = driver.FindElement(By.ClassName("search-result-list")).FindElements(By.ClassName("job-info"));
-                    var DataList = new List<List<String>>();
+                    var DataList = new List<List<string>>();
 
                     for (int i = 0; i < 5; i++)
                     {
-                        String JobTitle = ResultList[i].FindElement(By.TagName("h2")).Text;
-                        String Company = ResultList[i].FindElement(By.ClassName("job-company")).Text;
-                        String Location = ResultList[i].FindElement(By.ClassName("job-location")).Text;
-                        String Keywords = ResultList[i].FindElement(By.ClassName("job-keywords")).Text;
-                        String PageLink = ResultList[i].FindElement(By.TagName("a")).GetAttribute("href");
+                        string JobTitle = ResultList[i].FindElement(By.TagName("h2")).Text;
+                        string Company = ResultList[i].FindElement(By.ClassName("job-company")).Text;
+                        string Location = ResultList[i].FindElement(By.ClassName("job-location")).Text;
+                        string Keywords = ResultList[i].FindElement(By.ClassName("job-keywords")).Text;
+                        string PageLink = ResultList[i].FindElement(By.TagName("a")).GetAttribute("href");
 
-                        var ThisData = new List<string>();
-                        ThisData.Add(JobTitle);
-                        ThisData.Add(Company);
-                        ThisData.Add(Location);
-                        ThisData.Add(Keywords);
-                        ThisData.Add(PageLink);
+                        var ThisData = new List<string>
+                        {
+                            JobTitle,
+                            Company,
+                            Location,
+                            Keywords,
+                            PageLink
+                        };
 
                         DataList.Add(ThisData);
                     }
@@ -229,21 +226,17 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     var driver = new ChromeDriver(chromeOptions);
                     //var driver = new ChromeDriver();
 
-                    Console.Clear();
-                    Console.WriteLine("Scrapen van de basisdata van 5 recentste videos");
-
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.Write("Please enter a search term here: ");
-                    String SearchTerm = Console.ReadLine();
-                    while (SearchTerm == null)
+                    
+                    WriteInColor("Scrapen van de basisdata van 5 recentste videos", "White", true, true);
+                    WriteInColor("Please enter a search term here: ", "Magenta", false);
+                    string SearchTerm = Console.ReadLine();
+                    while (SearchTerm == "" || SearchTerm == " ")
                     {
+                        WriteInColor("Please enter a search term here: ", "Magenta", false);
                         SearchTerm = Console.ReadLine();
                     }
-
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Getting 5 most recent videos");
-                    Console.ResetColor();
+                    WriteInColor("Getting 5 most recent videos", "Green", true, true);
+                    
 
                     driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + SearchTerm + "&sp=CAI%253D");
 
@@ -262,46 +255,42 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         string title = meta.FindElement(By.TagName("h3")).Text;
 
                         var metadata = meta.FindElement(By.Id("metadata-line")).FindElements(By.TagName("span"));
-                        var vieuws = "Livestreams have no vieuws";
+                        string vieuws = "Livestreams have no vieuws";
                         string upload = "Livestreams have no upload date";
 
                         if (metadata.Count != 0) //if there are no items in the metadate this is a livestream
                         {
-                            var b = metadata[0].Text;
+                            string b = metadata[0].Text;
                             vieuws = b.Substring(0, b.Length - 6);
                             upload = metadata[1].Text;
-
                         }
                         else
                         {
                             Console.WriteLine("THIS IS A LIVESTREAM");
-                            title += " ---LIVE---";
+                            title += " 🔴 LIVE";
                         }
 
 
                         var channel = Videos[i].FindElement(By.Id("channel-name")).FindElement(By.TagName("a")).GetAttribute("text");
 
-
-                        int a = i + 1;
-                        Console.WriteLine("------------------------------" + a + "------------------------------");
+                        Console.WriteLine("------------------------------ " + (i + 1) + " ------------------------------");
                         Console.WriteLine("Title: " + title);
                         Console.WriteLine("Vieuws: " + vieuws);
                         Console.WriteLine("Upload: " + upload);
                         Console.WriteLine("ChannelName: " + channel);
 
-                        var ThisData = new List<string>();
-                        ThisData.Add(title);
-                        ThisData.Add(vieuws);
-                        ThisData.Add(upload);
-                        ThisData.Add(channel);
-
+                        var ThisData = new List<string>
+                        {
+                            title,
+                            vieuws,
+                            upload,
+                            channel
+                        };
 
                         DataList.Add(ThisData);
                     }
 
                     SaveToJson(DataList, "Youtube");
-
-
                 }
 
                 static List<string> SpotifySongList(bool Custom = false)
@@ -312,31 +301,22 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     var driver = new ChromeDriver(chromeOptions);
                     //var driver = new ChromeDriver();
 
-                    Console.Clear();
                     if (!Custom)
                     {
                         driver.Navigate().GoToUrl("https://open.spotify.com/playlist/37i9dQZF1DWVmX5LMTOKPw");
-
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("Getting list of Spotify top 50");
-                        Console.ResetColor();
+                        WriteInColor("Getting list of Spotify top 50", "Green", true, true);
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Magenta;
-                        Console.Write("Please paste the playlist URL here: ");
+                        WriteInColor("Please paste the playlist URL here: ", "Magenta", false, true);
                         String Playlist = Console.ReadLine();
-                        Console.WriteLine(Playlist);
-                        while (Playlist == null || Playlist == "")
+                        while (Playlist == "" || Playlist == " ")
                         {
-                            Console.Write("Please paste the playlist URL here: ");
+                            WriteInColor("Please paste the playlist URL here: ", "Magenta", false);
                             Playlist = Console.ReadLine();
                         }
                         driver.Navigate().GoToUrl(Playlist);
-
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("Getting custom Spotify playlist");
-                        Console.ResetColor();
+                        WriteInColor("Getting custom Spotify playlist", "Green", true, true);
                         Thread.Sleep(5000);
                     }
 
@@ -353,7 +333,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
 
                     var songs = songlist.FindElements(By.TagName("div"));
-                    List<string> CombinedList = new List<string>();
+                    List<string> CombinedList = new();
 
                     var DataList = new List<List<String>>();
 
@@ -377,15 +357,17 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         Console.WriteLine(i / 11 + 1 + "\t" + combined);
                         CombinedList.Add(combined);
 
-                        var ThisData = new List<string>();
-                        ThisData.Add(SongName);
-                        ThisData.Add(Artist2);
+                        var ThisData = new List<string>
+                        {
+                            SongName,
+                            Artist2
+                        };
 
 
                         DataList.Add(ThisData);
 
                     }
-                    SaveToJson(DataList, "Songs");
+                    SaveToJson(DataList, "SpotifySongs");
 
                     driver.Close();
                     return CombinedList;
@@ -400,10 +382,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     var driver = new ChromeDriver(chromeOptions);
                     //var driver = new ChromeDriver();
 
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Getting list of UltraTop50");
-                    Console.ResetColor();
+                    WriteInColor("Getting list of UltraTop50", "Green", true, true);
+
 
                     driver.Navigate().GoToUrl("https://mnm.be/programmagids/ultratop50");
                     Console.WriteLine("Waiting for page to finish loading...");
@@ -419,10 +399,9 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                     Console.WriteLine("Searching latest UltraTop50");
                     var links = driver.FindElement(By.XPath("/html/body/div[1]/div/main/div/div[2]/div[2]/div/div/div[2]/a[1]"));
-                    Console.WriteLine(links.GetAttribute("href"));
-
-                    var date = links.FindElement(By.TagName("p"));
-                    Console.WriteLine("Latest UltraTop 50: " + date.Text);
+                    Console.WriteLine("URL: " + links.GetAttribute("href"));
+                    string date = links.FindElement(By.TagName("p")).Text;
+                    Console.WriteLine("Latest UltraTop 50: " + date);
 
 
                     Console.WriteLine("Getting song list");
@@ -436,8 +415,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
 
                     string pattern = @"(.*) - (.*)";
-                    Regex rg = new Regex(pattern);
-                    List<string> SongsAsText = new List<string>();
+                    Regex rg = new(pattern);
+                    List<string> SongsAsText = new();
 
                     var DataList = new List<List<String>>();
 
@@ -445,20 +424,22 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     foreach (var song in songs)
                     {
                         var split = rg.Match(song.Text);
-                        var currentSong = split.Groups[1].ToString() + " " + split.Groups[2].ToString();
+                        string currentSong = split.Groups[1].ToString() + " " + split.Groups[2].ToString();
                         SongsAsText.Add(currentSong);
                         Console.WriteLine(Index + 1 + "\t" + currentSong);
 
                         Index++;
 
-                        var ThisData = new List<string>();
-                        ThisData.Add(split.Groups[1].ToString());
-                        ThisData.Add(split.Groups[2].ToString());
+                        var ThisData = new List<string>
+                        {
+                            split.Groups[1].ToString(),
+                            split.Groups[2].ToString()
+                        };
 
 
                         DataList.Add(ThisData);
                     }
-                    SaveToJson(DataList, "Songs");
+                    SaveToJson(DataList, "MNMSongs");
                     driver.Close();
                     return SongsAsText;
                 }
@@ -468,12 +449,11 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                 {
                     Console.WriteLine("\n------------------------------");
                     Console.Write("1\t: Download this list");
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(" !!CPU intensive!!");
-                    Console.ResetColor();
+                    WriteInColor(" !!CPU intensive!!", "Red");
                     Console.WriteLine("Any key\t: Return to menu");
                     Console.WriteLine("------------------------------\n");
                     var download = Console.ReadLine();
+
 
                     if (download != "1")
                     {
@@ -516,18 +496,16 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     var Path = "/html/body/ytd-app/ytd-consent-bump-v2-lightbox/tp-yt-paper-dialog/div[4]/div[2]/div[6]/div[1]/ytd-button-renderer[1]/yt-button-shape/button/yt-touch-feedback-shape/div/div[2]";
                     driver.FindElement(By.XPath(Path)).Click();
 
-                    var i = 0;
+                    
                     int total = SongsAsText.Count;
                     Console.WriteLine("About to download " + total.ToString() + " songs");
 
 
-
+                    int i = 0;
                     foreach (var song in SongsAsText)
                     {
-                        var search = song.Replace(" ", "+").Replace("&", "").Replace("/", "");
-
+                        string search = song.Replace(" ", "+").Replace("&", "").Replace("/", ""); // replace characters that mess up the url
                         driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + search);
-
                         Thread.Sleep(500);
 
 
@@ -535,14 +513,11 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         var temp = youtubeList.FindElement(By.Id("thumbnail"));
                         var songURL = temp.GetAttribute("href");
 
-                        var path = Directory.GetCurrentDirectory() + @"\Downloads";
-                        
-                        //var path = @"C:\Users\Tibbo\source\repos\DevOps Project Webscraper Tibbo Van Leemput\DevOps Project Webscraper Tibbo Van Leemput\Downloads";
-                        string strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x --audio-format mp3 -P \"" + path + "\" -o \"" + song + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
-
+                        string path = Directory.GetCurrentDirectory() + @"\Downloads";
+                        string strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x --audio-format mp3 -P \"" + path + "\" -o \"" + (i + 1) + " - " + song + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
                         if (bestQuality)
                         {
-                            strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x -P \"" + path + "\" -o \"" + song + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
+                            strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x -P \"" + path + "\" -o \"" + (i + 1) + " - " + song + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
                         }
 
 
@@ -553,43 +528,32 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         proc.StartInfo.CreateNoWindow = true;
                         proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         proc.Start();
-
                         //Process.Start("CMD.exe", strCmdText);
 
-
                         i++;
-
                     }
 
                     driver.Close();
                     Console.WriteLine("Succesfully downloaded all songs!");
-
-
+                    WriteInColor("(You may need to restart eplorer.exe for it to\nbe able to open the downloads directory)\n", "Blue");
                 }
-
-
             }
             catch
             {
                 // if anything goes wrong let the user know and restart the app
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\n-----------------------------------------------");
-                Console.WriteLine("Oops! it seems something went wrong somewhere?!");
-                Console.WriteLine("-----------------------------------------------\n");
-                Console.ResetColor();
+                WriteInColor("\n-----------------------------------------------", "Red");
+                WriteInColor("Oops! it seems something went wrong somewhere?!", "Red");
+                WriteInColor("-----------------------------------------------\n", "Red");
 
-                Console.WriteLine("Taking you back to the menu in 15 seconds");
-
+                Console.WriteLine("returning to menu in 15 seconds");
                 for (int i = 15; i >= 0; i--)
                 {
-                    Console.Write(".");
+                    Console.Write("#");
                     Thread.Sleep(1000);
                 }
-
                 Main(args);
 
             }
-
         }
     }
 }
