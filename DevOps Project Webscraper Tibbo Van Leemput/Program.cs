@@ -431,7 +431,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                     driver.ExecuteScript("document.body.style.zoom='1%'"); // zooming out so spotify loads all songs
 
-                    Thread.Sleep(3000);
+                    Thread.Sleep(6000);
 
 
 
