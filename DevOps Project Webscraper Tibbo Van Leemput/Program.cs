@@ -4,11 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text.Json;
-using OpenQA.Selenium.DevTools.V106.Cast;
-using static System.Net.WebRequestMethods;
 using File = System.IO.File;
-using Microsoft.VisualBasic;
-using System.Runtime.Intrinsics.X86;
 
 namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 {
@@ -19,6 +15,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
             Console.OutputEncoding = Encoding.UTF8;
 
             String GlobalPath = Directory.GetCurrentDirectory();
+
             if (!Directory.Exists(GlobalPath + @"\Downloads"))
             {
                 Directory.CreateDirectory(GlobalPath + @"\Downloads");
@@ -28,15 +25,12 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                 Directory.CreateDirectory(GlobalPath + @"\Json");
             }
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("\n---------------------------------------------------------");
-            Console.WriteLine("To be able to use the download functionality of this application\nyou must have YOUTUBEDLP AND FFMPEG installed and added to your path!!");
-            Console.WriteLine("Youtubedlp: https://github.com/yt-dlp/yt-dlp");
-            Console.WriteLine("ffmpeg: https://phoenixnap.com/kb/ffmpeg-windows");
-            Console.WriteLine("\nDepending on your terminal you may see missing symbols,\nto fix this use the new windows Terminal");
-            Console.WriteLine("---------------------------------------------------------\n");
-            Console.ResetColor();
-            //Thread.Sleep(1000);
+            WriteInColor("\n---------------------------------------------------------", "Red");
+            WriteInColor("To be able to use the download functionality of this application\nyou must have YOUTUBEDLP AND FFMPEG installed and added to your path!!", "Red");
+            WriteInColor("Youtubedlp: https://github.com/yt-dlp/yt-dlp", "Red");
+            WriteInColor("ffmpeg: https://phoenixnap.com/kb/ffmpeg-windows", "Red");
+            WriteInColor("\nDepending on your terminal you may see missing symbols,\nto fix this use the new windows Terminal", "Red");
+            WriteInColor("---------------------------------------------------------\n", "Red");
 
             
 
@@ -50,7 +44,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                 for (int i = 0; i < consoleColors.Length; i++) { 
                     if (color.Equals(consoleColors[i].ToString())) {
                         Console.ForegroundColor = consoleColors[i];
-
+                        
                         if (NewLine)
                         {
                             Console.WriteLine(message);
@@ -127,7 +121,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                 static void SaveToJson(List<List<String>> ListOfLists, String KindOfData)
                 {
                     DateTime now = DateTime.Now;
-                    string partOfFilename = now.ToString().Replace("/", "").Replace(":", "").Replace(" ", ""); //ensure song names do not contain characters windows does not allow
+                    string partOfFilename = now.ToString().Replace("/", "-").Replace(":", ""); //ensure song names do not contain characters windows does not allow
                     string filename = KindOfData + " - " + partOfFilename;
                     string path = Directory.GetCurrentDirectory() + @"\Json\" + filename + ".json";
                     WriteInColor("\nSaving data to JSON as \"" + filename + "\"\n", "Blue");
@@ -323,9 +317,9 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                 {
                     WriteInColor("Please paste the playlist URL here: ", "Magenta", false, true);
                     String Playlist = Console.ReadLine();
-                    while (Playlist == "" || Playlist == " ")
+                    while (Playlist == "" || Playlist == " " || !Playlist.Contains("https://www.youtube.com/playlist?list="))
                     {
-                        WriteInColor("Please paste the playlist URL here: ", "Magenta", false);
+                        WriteInColor("Please paste a valid PLAYLIST URL here (not a video): ", "Magenta", false);
                         Playlist = Console.ReadLine();
                     }
 
@@ -562,31 +556,21 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     Console.WriteLine("Any key\t: Return to menu");
                     Console.WriteLine("------------------------------\n");
                     var download = Console.ReadLine();
-
-                    if (download != "1")
-                    {
-                        ShowMenu();
-                        return;
-                    }
-
+                    if (download != "1") ShowMenu();
+                   
 
                     Console.WriteLine("\n------------------------------");
                     Console.WriteLine("1\t: Best audio quality");
                     Console.WriteLine("2\t: Compatibility (mp3)");
                     Console.WriteLine("Any key\t: Return to menu");
                     Console.WriteLine("------------------------------\n");
-                    var AudioQuality = Console.ReadLine();
-                    bool bestQuality = false;
+                    string AudioQuality = Console.ReadLine();
 
-                    if (AudioQuality == "1")
-                    {
-                        bestQuality = true;
-                    }
-                    else if (AudioQuality != "2")
-                    {
-                        ShowMenu();
-                        return;
-                    }
+
+                    if (AudioQuality != "1" && AudioQuality != "2") ShowMenu();
+                    string quality = AudioQuality == "1" ? "" : "--audio-format mp3 ";
+                    
+
                     // get a headless chrome for increased speed
                     var chromeOptions = new ChromeOptions();
                     chromeOptions.AddArgument("headless");
@@ -606,70 +590,74 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     }
 
                     int total = SongsAsText.Count;
-                    Console.WriteLine("About to download " + total.ToString() + " songs");
-
+                    WriteInColor("About to download " + total.ToString() + " songs", "Blue");
+                    WriteInColor("Press Q at any time stop the download process!", "Red");
+                    
                     DateTime before = DateTime.Now;
-                    //Console.WriteLine(before);
-                    var HumanReadableTime = before.ToString("G").Replace("/", " ").Replace(":", "");
-                    //Console.WriteLine(HumanReadableTime);
+                    var HumanReadableTime = before.ToString("G").Replace("/", "-").Replace(":", "");
                     string path = Directory.GetCurrentDirectory() + @"\Downloads\" + HumanReadableTime;
                     int sleeptimer = IsThisListAlreadyYoutubeURLs ? 2000 : 1000;
                     int i = 0;
-                    foreach (var song in SongsAsText)
+
+                    bool forceStoppedDownload = false;
+                    bool normalStopped = false;
+                    while (!forceStoppedDownload && !normalStopped)
                     {
-                        var songURL = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[1] : "";
-                        //Console.WriteLine(songURL);
-                        var filename = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[0] : song;
-                    
-                        if (!IsThisListAlreadyYoutubeURLs)
+                        foreach (var song in SongsAsText)
                         {
-                            string search = song.Replace(" ", "+").Replace("&", "").Replace("/", ""); // replace characters that mess up the url
-                            driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + search);
-                            Thread.Sleep(500);
+                            if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Q)
+                            {
+                                WriteInColor("\nYou pressed Q which ends the downloading process!", "Red", false);
+                                forceStoppedDownload = true;
+                                break;
+                            }
+
+                            var songURL = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[1] : "";
+                            var filename = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[0] : song;
+
+                            if (!IsThisListAlreadyYoutubeURLs)
+                            {
+                                string search = song.Replace(" ", "+").Replace("&", "").Replace("/", ""); // replace characters that mess up the url
+                                driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + search);
+                                Thread.Sleep(500);
+
+                                var youtubeList = driver.FindElement(By.Id("contents"));
+                                var temp = youtubeList.FindElement(By.Id("thumbnail"));
+                                songURL = temp.GetAttribute("href");
+                            }
+
+                            //string quality = bestQuality ? "" : "--audio-format mp3 ";
+                            string strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x " + quality + "-P \"" + path + "\" -o \"" + (i + 1) + " - " + filename + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
 
 
-                            var youtubeList = driver.FindElement(By.Id("contents"));
-                            var temp = youtubeList.FindElement(By.Id("thumbnail"));
-                            songURL = temp.GetAttribute("href");
-                            
+                            Console.WriteLine(i + 1 + "/" + total.ToString() + "\t" + filename);
+                            var proc = new Process();
+                            proc.StartInfo.FileName = "CMD.exe";
+                            proc.StartInfo.Arguments = strCmdText;
+                            proc.StartInfo.CreateNoWindow = true;
+                            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                            proc.Start();
+                            //Process.Start("CMD.exe", strCmdText);
+
+                            i++;
+                            Thread.Sleep(sleeptimer);
                         }
-
-             
-                        string strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x --audio-format mp3 -P \"" + path + "\" -o \"" + (i + 1) + " - " + filename + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
-                        if (bestQuality)
-                        {
-                            strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x -P \"" + path + "\" -o \"" + (i + 1) + " - " + filename + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
-                        }
-
-
-                        Console.WriteLine(i + 1 + "/" + total.ToString() + "\t" + filename);
-                        var proc = new Process();
-                        proc.StartInfo.FileName = "CMD.exe";
-                        proc.StartInfo.Arguments = strCmdText;
-                        proc.StartInfo.CreateNoWindow = true;
-                        proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        proc.Start();
-                        //Process.Start("CMD.exe", strCmdText);
-
-                        i++;
-                        Thread.Sleep(sleeptimer);
+                        normalStopped = true;
                     }
 
                     driver.Close();
                     TimeSpan span = DateTime.Now - before;
-                    WriteInColor("\nSuccesfully downloaded all songs in " + span.Minutes + " minutes and " + span.Seconds + " seconds!", "Blue");
-
-                    //Console.WriteLine("Succesfully downloaded all songs!");
-                    WriteInColor("(You may need to restart eplorer.exe for it to\nbe able to open the downloads directory)\n", "Blue");
+                    WriteInColor("\nSuccesfully downloaded " + i + "/" + total + " songs in " + span.Minutes + " minutes and " + span.Seconds + " seconds!", "Blue");
+                    WriteInColor("(You may need to restart eplorer.exe for it to\nbe able to properly open the downloads directory)\n", "Blue");
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 // if anything goes wrong let the user know and restart the app
                 WriteInColor("\n-----------------------------------------------", "Red");
                 WriteInColor("Oops! it seems something went wrong somewhere?!", "Red");
                 WriteInColor("-----------------------------------------------\n", "Red");
-
+                WriteInColor(ex.ToString());
                 Console.WriteLine("returning to menu in 15 seconds");
                 for (int i = 15; i >= 0; i--)
                 {
@@ -677,7 +665,6 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     Thread.Sleep(1000);
                 }
                 Main(args);
-
             }
         }
     }
