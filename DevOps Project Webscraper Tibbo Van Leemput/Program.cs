@@ -392,7 +392,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                 static List<string> SpotifySongList(bool Custom = false)
                 {
-                    var driver = StartWebDriver(false, "https://open.spotify.com/playlist/37i9dQZF1DWVmX5LMTOKPw") ;
+                    var driver = StartWebDriver(true, "https://open.spotify.com/playlist/37i9dQZF1DWVmX5LMTOKPw") ;
 
                     if (!Custom)
                     {
@@ -424,7 +424,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         songlist = driver.FindElement(By.XPath(Path1));
                     } catch
                     {
-                        WriteInColor("Fallback to alternative main pos in dom", "Blue");
+                        WriteInColor("Fallback to alternative main pos in dom", "Blue"); // for when spotify randomly decides to add a fourth div
                         songlist = driver.FindElement(By.XPath(Path2));
                     }
                     
