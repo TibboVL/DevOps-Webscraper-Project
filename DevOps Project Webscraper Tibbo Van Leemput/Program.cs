@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text.Json;
 using File = System.IO.File;
+using OpenQA.Selenium.DevTools.V106.HeadlessExperimental;
+using System.Threading.Channels;
 
 namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 {
@@ -117,6 +119,26 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     Selections(response.ToString());
                 }
 
+                static ChromeDriver StartWebDriver(bool headless = true, string startAtURL = "", int loadDelay = 3000)
+                {
+                    var chromeOptions = new ChromeOptions();
+                    if (headless)// get a headless chrome for increased speed
+                    {
+                        chromeOptions.AddArgument("headless");
+                        chromeOptions.AddArgument("log-level=3");
+                    }
+                    var driver = new ChromeDriver(chromeOptions);
+                    if (startAtURL != "") {
+                        driver.Navigate().GoToUrl(startAtURL);
+                        WriteInColor("Waiting for page to finish loading ", "Blue", false);
+                        for (int i = 1; i <= loadDelay / 1000; i++)
+                        {
+                            WriteInColor(".", "Blue", i == loadDelay / 1000 );
+                            Thread.Sleep(1000);
+                        }
+                    }
+                    return driver;
+                }
 
                 static void SaveToJson(List<List<String>> ListOfLists, String KindOfData)
                 {
@@ -194,12 +216,6 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                 static void GetJobs()
                 {
-                    var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("headless");
-                    chromeOptions.AddArgument("log-level=3");
-                    var driver = new ChromeDriver(chromeOptions);
-                    //var driver = new ChromeDriver();
-
                     WriteInColor("Scrapen van 5 recentste jobs op ictjobs.be", "White", true, true);
                     WriteInColor("Please enter a search term here: ", "Magenta", false);
                     String SearchTerm = Console.ReadLine();
@@ -209,8 +225,9 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         SearchTerm = Console.ReadLine();
                     }
                     WriteInColor("Getting 5 most recent jobs", "Green");
-     
 
+                    var driver = StartWebDriver(true, "https://www.ictjob.be/en/search-it-jobs?keywords=" + SearchTerm);
+                    Thread.Sleep(3000); // wait for their dumb verification and resubmit the search
                     driver.Navigate().GoToUrl("https://www.ictjob.be/en/search-it-jobs?keywords=" + SearchTerm);
                     var ResultList = driver.FindElement(By.ClassName("search-result-list")).FindElements(By.ClassName("job-info"));
                     var DataList = new List<List<string>>();
@@ -223,6 +240,13 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         string Keywords = ResultList[i].FindElement(By.ClassName("job-keywords")).Text;
                         string PageLink = ResultList[i].FindElement(By.TagName("a")).GetAttribute("href");
 
+                        Console.WriteLine("------------------------------ " + (i + 1) + " ------------------------------");
+                        Console.WriteLine("Title: " + JobTitle);
+                        Console.WriteLine("Company: " + Company);
+                        Console.WriteLine("Location: " + Location);
+                        Console.WriteLine("Keywords: " + Keywords);
+                        Console.WriteLine("PageLink: " + PageLink);
+
                         var ThisData = new List<string>
                         {
                             JobTitle,
@@ -231,12 +255,9 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                             Keywords,
                             PageLink
                         };
-
                         DataList.Add(ThisData);
                     }
-
                     SaveToJson(DataList, "Jobs");
-
                 }
 
                 static void GetBaseData()
@@ -249,25 +270,13 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         WriteInColor("Please enter a search term here: ", "Magenta", false);
                         SearchTerm = Console.ReadLine();
                     }
-                    WriteInColor("Getting 5 most recent videos", "Green", true, true); 
-                    
-                    
-                    var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("headless");
-                    chromeOptions.AddArgument("log-level=3");
-                    var driver = new ChromeDriver(chromeOptions);
-                    //var driver = new ChromeDriver();
 
-                    driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + SearchTerm + "&sp=CAI%253D");
-
-                    Console.WriteLine("Waiting for page to finish loading...");
-                    Thread.Sleep(2000);
-
+                    WriteInColor("Getting 5 most recent videos", "Green", true, true);
+                    var driver = StartWebDriver(true,"https://www.youtube.com/results?search_query=" + SearchTerm + "&sp=CAI%253D");
                     var VideoContainer = driver.FindElement(By.Id("contents"));
                     var Videos = VideoContainer.FindElements(By.TagName("ytd-video-renderer"));
 
                     var DataList = new List<List<String>>();
-
 
                     for (int i = 0; i < 5; i++)
                     {
@@ -277,8 +286,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         var metadata = meta.FindElement(By.Id("metadata-line")).FindElements(By.TagName("span"));
                         string vieuws = "Livestreams have no vieuws";
                         string upload = "Livestreams have no upload date";
-
-                        if (metadata.Count != 0) //if there are no items in the metadate this is a livestream
+                        var channel = Videos[i].FindElement(By.Id("channel-name")).FindElement(By.TagName("a")).GetAttribute("text");
+                        if (metadata.Count < 1) //if there are no items in the metadate this is a livestream
                         {
                             string b = metadata[0].Text;
                             vieuws = b.Substring(0, b.Length - 6);
@@ -289,9 +298,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                             Console.WriteLine("THIS IS A LIVESTREAM");
                             title += " 🔴 LIVE";
                         }
-
-
-                        var channel = Videos[i].FindElement(By.Id("channel-name")).FindElement(By.TagName("a")).GetAttribute("text");
+                        
 
                         Console.WriteLine("------------------------------ " + (i + 1) + " ------------------------------");
                         Console.WriteLine("Title: " + title);
@@ -306,10 +313,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                             upload,
                             channel
                         };
-
                         DataList.Add(ThisData);
                     }
-
                     SaveToJson(DataList, "Youtube");
                 }
 
@@ -319,20 +324,11 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     String Playlist = Console.ReadLine();
                     while (Playlist == "" || Playlist == " " || !Playlist.Contains("https://www.youtube.com/playlist?list="))
                     {
-                        WriteInColor("Please paste a valid PLAYLIST URL here (not a video): ", "Magenta", false);
+                        WriteInColor("Please paste a valid PLAYLIST URL \"https://www.youtube.com/playlist?list=\" here:", "Magenta", false);
                         Playlist = Console.ReadLine();
                     }
 
-                    var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("headless");
-                    chromeOptions.AddArgument("log-level=3");
-                    var driver = new ChromeDriver(chromeOptions);
-                    //var driver = new ChromeDriver();
-
-                    driver.Navigate().GoToUrl("https://www.youtube.com/");
-                    Console.WriteLine("Waiting for page to finish loading...");
-                    Thread.Sleep(3000);
-
+                    var driver = StartWebDriver(true , "https://www.youtube.com/");
 
                     Console.WriteLine("Declinging youtube cookies...");
                     var Path = "/html/body/ytd-app/ytd-consent-bump-v2-lightbox/tp-yt-paper-dialog/div[4]/div[2]/div[6]/div[1]/ytd-button-renderer[1]/yt-button-shape/button/yt-touch-feedback-shape/div/div[2]";
@@ -381,7 +377,6 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                             Uploaded
                         };
                         DataList.Add(ThisData);
-
                         string currentSong = SongName + "+++" + Link;
                         URLList.Add(currentSong);
 
@@ -390,7 +385,6 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     TimeSpan span = DateTime.Now - before;
                     WriteInColor("\nTotal reading of playlist took " + span.Minutes + " minutes and " + span.Seconds + " seconds", "Blue");
 
-
                     SaveToJson(DataList, "YouTubeCustom");
                     driver.Close();
                     return URLList;
@@ -398,11 +392,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                 static List<string> SpotifySongList(bool Custom = false)
                 {
-                    var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("headless");
-                    chromeOptions.AddArgument("log-level=3");
-                    var driver = new ChromeDriver(chromeOptions);
-                    //var driver = new ChromeDriver();
+                    var driver = StartWebDriver();
 
                     if (!Custom)
                     {
@@ -413,9 +403,9 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     {
                         WriteInColor("Please paste the playlist URL here: ", "Magenta", false, true);
                         String Playlist = Console.ReadLine();
-                        while (Playlist == "" || Playlist == " ")
+                        while (Playlist == "" || Playlist == " " || !Playlist.Contains("https://open.spotify.com/playlist/"))
                         {
-                            WriteInColor("Please paste the playlist URL here: ", "Magenta", false);
+                            WriteInColor("Please paste a valid PLAYLIST URL \"https://open.spotify.com/playlist/\" here:", "Magenta", false);
                             Playlist = Console.ReadLine();
                         }
                         driver.Navigate().GoToUrl(Playlist);
@@ -424,22 +414,15 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     }
 
 
+                    driver.ExecuteScript("document.body.style.zoom='1%'"); // zooming out so spotify loads all songs
                     Thread.Sleep(7000);
 
                     var Path = "/html/body/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[2]/div/div/div[2]/main/div/section/div[2]/div[3]/div/div[2]/div[2]";
                     var songlist = driver.FindElement(By.XPath(Path));
-
-                    driver.ExecuteScript("document.body.style.zoom='1%'"); // zooming out so spotify loads all songs
-
-                    Thread.Sleep(6000);
-
-
-
                     var songs = songlist.FindElements(By.TagName("div"));
+
                     List<string> CombinedList = new();
-
                     var DataList = new List<List<String>>();
-
 
                     // limit to max 700 as spotify for some reason does not like going further
                     for (int i = 0; i < songs.Count - 1 && i < 7700; i += 11)
@@ -448,30 +431,20 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                         var SongName = finalDiv.FindElement(By.TagName("a")).Text;
                         var Artist = finalDiv.FindElements(By.TagName("span"));
-
-                        var Artist2 = Artist[0].Text;
-                        if (Artist.Count > 1)
-                        {
-                            Artist2 = Artist[2].Text;
-                        }
-
+                        var Artist2 = Artist.Count > 1 ? Artist[2].Text : Artist[0].Text; // if there is an Explicit symbol take the part after it
 
                         var combined = Artist2 + " " + SongName;
                         Console.WriteLine(i / 11 + 1 + "\t" + combined);
                         CombinedList.Add(combined);
-
                         var ThisData = new List<string>
                         {
                             SongName,
                             Artist2
                         };
-
-
                         DataList.Add(ThisData);
 
                     }
                     SaveToJson(DataList, "SpotifySongs");
-
                     driver.Close();
                     return CombinedList;
                 }
@@ -479,18 +452,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                 static List<string> MNMSongList()
                 {
-                    var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("headless");
-                    chromeOptions.AddArgument("log-level=3");
-                    var driver = new ChromeDriver(chromeOptions);
-                    //var driver = new ChromeDriver();
-
+                    var driver = StartWebDriver(true, "https://mnm.be/programmagids/ultratop50");
                     WriteInColor("Getting list of UltraTop50", "Green", true, true);
-
-
-                    driver.Navigate().GoToUrl("https://mnm.be/programmagids/ultratop50");
-                    Console.WriteLine("Waiting for page to finish loading...");
-                    Thread.Sleep(2000);
 
                     Console.WriteLine("Accepting cookies");
                     var iframes = driver.FindElements(By.TagName("iframe"));
@@ -511,7 +474,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     var latestTop = links.GetAttribute("href");
                     driver.Navigate().GoToUrl(latestTop);
                     Console.WriteLine("Waiting for page to finish loading...");
-                    Thread.Sleep(5000);
+                    Thread.Sleep(6000);
 
                     var songList = driver.FindElement(By.XPath("/html/body/div[1]/div[2]/div/div[2]/div[1]/div[2]/div/ul"));
                     var songs = songList.FindElements(By.ClassName("full"));
@@ -531,16 +494,13 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         SongsAsText.Add(currentSong);
                         Console.WriteLine(Index + 1 + "\t" + currentSong);
 
-                        Index++;
-
                         var ThisData = new List<string>
                         {
                             split.Groups[1].ToString(),
                             split.Groups[2].ToString()
                         };
-
-
                         DataList.Add(ThisData);
+                        Index++;
                     }
                     SaveToJson(DataList, "MNMSongs");
                     driver.Close();
@@ -569,16 +529,11 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                     if (AudioQuality != "1" && AudioQuality != "2") ShowMenu();
                     string quality = AudioQuality == "1" ? "" : "--audio-format mp3 ";
-                    
 
-                    // get a headless chrome for increased speed
-                    var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("headless");
-                    chromeOptions.AddArgument("log-level=3");
-                    var driver = new ChromeDriver(chromeOptions);
-                    //var driver = new ChromeDriver();
 
-                    if (!IsThisListAlreadyYoutubeURLs) { 
+                    var driver = StartWebDriver();
+                    if (!IsThisListAlreadyYoutubeURLs)
+                    {
                         driver.Navigate().GoToUrl("https://www.youtube.com/");
                         Console.WriteLine("Waiting for page to finish loading...");
                         Thread.Sleep(3000);
@@ -588,6 +543,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         var Path = "/html/body/ytd-app/ytd-consent-bump-v2-lightbox/tp-yt-paper-dialog/div[4]/div[2]/div[6]/div[1]/ytd-button-renderer[1]/yt-button-shape/button/yt-touch-feedback-shape/div/div[2]";
                         driver.FindElement(By.XPath(Path)).Click();
                     }
+                    else driver.Close();
 
                     int total = SongsAsText.Count;
                     WriteInColor("About to download " + total.ToString() + " songs", "Blue");
@@ -612,6 +568,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                                 break;
                             }
 
+                            Thread.Sleep(sleeptimer);
+
                             var songURL = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[1] : "";
                             var filename = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[0] : song;
 
@@ -626,10 +584,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                                 songURL = temp.GetAttribute("href");
                             }
 
-                            //string quality = bestQuality ? "" : "--audio-format mp3 ";
                             string strCmdText = "/C C:\\YoutubeDL\\yt-dlp.exe -x " + quality + "-P \"" + path + "\" -o \"" + (i + 1) + " - " + filename + ".%(ext)s\" --embed-thumbnail --embed-metadata " + songURL;
-
-
                             Console.WriteLine(i + 1 + "/" + total.ToString() + "\t" + filename);
                             var proc = new Process();
                             proc.StartInfo.FileName = "CMD.exe";
@@ -637,10 +592,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                             proc.StartInfo.CreateNoWindow = true;
                             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                             proc.Start();
-                            //Process.Start("CMD.exe", strCmdText);
 
                             i++;
-                            Thread.Sleep(sleeptimer);
                         }
                         normalStopped = true;
                     }
@@ -657,7 +610,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                 WriteInColor("\n-----------------------------------------------", "Red");
                 WriteInColor("Oops! it seems something went wrong somewhere?!", "Red");
                 WriteInColor("-----------------------------------------------\n", "Red");
-                WriteInColor(ex.ToString());
+                Console.WriteLine(ex);
                 Console.WriteLine("returning to menu in 15 seconds");
                 for (int i = 15; i >= 0; i--)
                 {
