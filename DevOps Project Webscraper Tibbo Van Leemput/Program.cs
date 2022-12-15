@@ -392,11 +392,10 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                 static List<string> SpotifySongList(bool Custom = false)
                 {
-                    var driver = StartWebDriver();
+                    var driver = StartWebDriver(false, "https://open.spotify.com/playlist/37i9dQZF1DWVmX5LMTOKPw") ;
 
                     if (!Custom)
                     {
-                        driver.Navigate().GoToUrl("https://open.spotify.com/playlist/37i9dQZF1DWVmX5LMTOKPw");
                         WriteInColor("Getting list of Spotify top 50", "Green", true, true);
                     }
                     else
@@ -410,15 +409,25 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         }
                         driver.Navigate().GoToUrl(Playlist);
                         WriteInColor("Getting custom Spotify playlist", "Green", true, true);
-                        Thread.Sleep(5000);
+                        //Thread.Sleep(5000);
                     }
 
 
                     driver.ExecuteScript("document.body.style.zoom='1%'"); // zooming out so spotify loads all songs
                     Thread.Sleep(7000);
 
-                    var Path = "/html/body/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[2]/div/div/div[2]/main/div/section/div[2]/div[3]/div/div[2]/div[2]";
-                    var songlist = driver.FindElement(By.XPath(Path));
+                    var Path1 = "/html/body/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[2]/div/div/div[2]/main/div/section/div[2]/div[3]/div/div[2]/div[2]";
+                    var Path2 = "/html/body/div[4]/div/div[2]/div[3]/div[1]/div[2]/div[2]/div/div/div[2]/main/div/section/div[2]/div[3]/div/div[2]/div[2]";
+                    var songlist = driver.FindElement(By.TagName("body"));
+                    try
+                    {
+                        songlist = driver.FindElement(By.XPath(Path1));
+                    } catch
+                    {
+                        WriteInColor("Fallback to alternative main pos in dom", "Blue");
+                        songlist = driver.FindElement(By.XPath(Path2));
+                    }
+                    
                     var songs = songlist.FindElements(By.TagName("div"));
 
                     List<string> CombinedList = new();
@@ -611,7 +620,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                 WriteInColor("Oops! it seems something went wrong somewhere?!", "Red");
                 WriteInColor("-----------------------------------------------\n", "Red");
                 Console.WriteLine(ex);
-                Console.WriteLine("returning to menu in 15 seconds");
+                WriteInColor("\nreturning to menu in 15 seconds", "Yellow");
                 for (int i = 15; i >= 0; i--)
                 {
                     Console.Write("#");
