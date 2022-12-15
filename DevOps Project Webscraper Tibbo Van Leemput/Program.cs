@@ -5,8 +5,6 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text.Json;
 using File = System.IO.File;
-using OpenQA.Selenium.DevTools.V106.HeadlessExperimental;
-using System.Threading.Channels;
 
 namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 {
@@ -153,13 +151,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         List<YouTube> _data = new();
                         foreach (var List in ListOfLists)
                         {
-                            _data.Add(new YouTube()
-                            {
-                                title = List[0],
-                                vieuws = List[1],
-                                upload = List[2],
-                                channel = List[3]
-                            });
+                            _data.Add(new YouTube() 
+                            {title = List[0],vieuws = List[1],upload = List[2],channel = List[3]});
                         }
                         string json = JsonSerializer.Serialize(_data);
                         File.WriteAllText(path, json);
@@ -170,13 +163,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         foreach (var List in ListOfLists)
                         {
                             _JobData.Add(new Jobs()
-                            {
-                                JobTitle = List[0],
-                                Company = List[1],
-                                Location = List[2],
-                                Keywords = List[3],
-                                PageLink = List[4]
-                            });
+                            {JobTitle = List[0],Company = List[1],Location = List[2],Keywords = List[3],PageLink = List[4]});
                         }
                         string json = JsonSerializer.Serialize(_JobData);
                         File.WriteAllText(path, json);
@@ -187,10 +174,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         foreach (var List in ListOfLists)
                         {
                             _SongData.Add(new Songs()
-                            {
-                                SongName = List[0],
-                                Artist = List[1],
-                            });
+                            {SongName = List[0],Artist = List[1],});
                         }
                         string json = JsonSerializer.Serialize(_SongData);
                         File.WriteAllText(path, json);
@@ -200,13 +184,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         foreach (var List in ListOfLists)
                         {
                             _YoutubePlaylistData.Add(new YouTubePlaylist()
-                            {
-                                SongName = List[0],
-                                URL = List[1],
-                                channel = List[2],
-                                vieuws = List[3],
-                                upload = List[4]
-                            });
+                            {SongName = List[0],URL = List[1],channel = List[2],vieuws = List[3],upload = List[4]});
                         }
                         string json = JsonSerializer.Serialize(_YoutubePlaylistData);
                         File.WriteAllText(path, json);
@@ -247,14 +225,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         Console.WriteLine("Keywords: " + Keywords);
                         Console.WriteLine("PageLink: " + PageLink);
 
-                        var ThisData = new List<string>
-                        {
-                            JobTitle,
-                            Company,
-                            Location,
-                            Keywords,
-                            PageLink
-                        };
+                        var ThisData = new List<string>{JobTitle,Company,Location,Keywords,PageLink};
                         DataList.Add(ThisData);
                     }
                     SaveToJson(DataList, "Jobs");
@@ -306,13 +277,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         Console.WriteLine("Upload: " + upload);
                         Console.WriteLine("ChannelName: " + channel);
 
-                        var ThisData = new List<string>
-                        {
-                            title,
-                            vieuws,
-                            upload,
-                            channel
-                        };
+                        var ThisData = new List<string>{title,vieuws,upload,channel};
                         DataList.Add(ThisData);
                     }
                     SaveToJson(DataList, "Youtube");
@@ -368,14 +333,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         Console.WriteLine(Views);
                         Console.WriteLine(Uploaded);
 
-                        var ThisData = new List<string>
-                        {
-                            SongName,
-                            Link,
-                            ChannelName,
-                            Views,
-                            Uploaded
-                        };
+                        var ThisData = new List<string>{SongName,Link,ChannelName,Views,Uploaded};
                         DataList.Add(ThisData);
                         string currentSong = SongName + "+++" + Link;
                         URLList.Add(currentSong);
@@ -445,11 +403,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         var combined = Artist2 + " " + SongName;
                         Console.WriteLine(i / 11 + 1 + "\t" + combined);
                         CombinedList.Add(combined);
-                        var ThisData = new List<string>
-                        {
-                            SongName,
-                            Artist2
-                        };
+
+                        var ThisData = new List<string>{SongName,Artist2};
                         DataList.Add(ThisData);
 
                     }
@@ -503,11 +458,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                         SongsAsText.Add(currentSong);
                         Console.WriteLine(Index + 1 + "\t" + currentSong);
 
-                        var ThisData = new List<string>
-                        {
-                            split.Groups[1].ToString(),
-                            split.Groups[2].ToString()
-                        };
+                        var ThisData = new List<string>{split.Groups[1].ToString(),split.Groups[2].ToString()};
                         DataList.Add(ThisData);
                         Index++;
                     }
@@ -581,6 +532,8 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                             var songURL = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[1] : "";
                             var filename = IsThisListAlreadyYoutubeURLs ? song.Split("+++")[0] : song;
+                            // remove any illegal characters
+                            filename = filename.Replace("#", "").Replace("/", "").Replace("%", "").Replace("&", "").Replace("\\", "").Replace("{", "").Replace("}", "").Replace("<", "").Replace(">", "").Replace("*", "").Replace("?", "").Replace("$", "").Replace("!", "").Replace("'", "").Replace("\"", "").Replace(":", "").Replace("+", "").Replace("`", "").Replace("|", "").Replace("=", "");
 
                             if (!IsThisListAlreadyYoutubeURLs)
                             {
