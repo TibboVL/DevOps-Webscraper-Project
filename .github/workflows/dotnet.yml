@@ -52,8 +52,9 @@ jobs:
        #   zip -r WebscraperTVL "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
       run: |
           cd "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
-          zip /WebscraperTVL *
+          zip /home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/WebscraperTVL *
     - run: ls "./"
+    - run: ls "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/"
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
@@ -62,6 +63,6 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         #asset_path: ./WebscraperTVL.zip
-        asset_path: /WebscraperTVL.zip
+        asset_path: ./WebscraperTVL.zip
         asset_name: WebscraperTVL.zip
         asset_content_type: application/zip
