@@ -27,7 +27,7 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
-    - run: ls "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
+    #- run: ls "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -52,9 +52,11 @@ jobs:
       with:
         #tag_name: ${{ github.ref }}
         tag_name: Latest
-        release_name: Release ${{ github.ref }}
+        #release_name: Release ${{ github.ref }}
+        release_name: Latest
         draft: false
         prerelease: false
+    - run: ls "./"
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
