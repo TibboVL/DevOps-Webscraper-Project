@@ -36,7 +36,7 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@91409e712cf565ce9eff10c87a8d1b11b81757ae
       with:
-        tag: test
+        tag_name: test
         # Identify if this is a pre release by checking if the tag name contains -rc, -b, -a
         prerelease: false
         files: artifacts/*
