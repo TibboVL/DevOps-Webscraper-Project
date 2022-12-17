@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text.Json;
 using File = System.IO.File;
+using static System.Net.WebRequestMethods;
+using OpenQA.Selenium.Firefox;
 
 namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 {
@@ -108,7 +110,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
                     Console.WriteLine("3: Download a custom spotify playlist (max 700)");
                     Console.WriteLine("4: Scrapen van de basisdata van 5 recentste videos");
                     Console.WriteLine("5: Scrapen van 5 recentste jobs op ictjobs.be");
-                    Console.WriteLine("6: Download a custom youtube platlist (max 700)");
+                    Console.WriteLine("6: Download a custom PUBLIC youtube(music) platlist (max 700)");
                     Console.WriteLine("Q: Exit");
                     WriteInColor("\n(Repetition of same task can cause websites to temporary\nlimit/block traffic which causes the script issues!)", "Yellow");
                     Console.WriteLine("--------------------------------------------------------\n");
@@ -285,12 +287,24 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                 static List<string> YoutubeSongList()
                 {
-                    WriteInColor("Please paste the playlist URL here: ", "Magenta", false, true);
+                    WriteInColor("Youtube Music IS SUPPORTED but ONLY IF PUBLIC playlist: ", "Red", true, true);
+                    WriteInColor("Please paste the playlist URL here: ", "Magenta", false);
+                    
                     String Playlist = Console.ReadLine();
+                    // youtube music public playlist support
+                    if (Playlist.Contains("https://music.youtube.com/playlist?list="))
+                    {
+                        Playlist = "https://www.youtube.com/playlist?list=" + Playlist.Substring(40);
+                    }
+                    WriteInColor(Playlist, "Blue");
                     while (Playlist == "" || Playlist == " " || !Playlist.Contains("https://www.youtube.com/playlist?list="))
                     {
                         WriteInColor("Please paste a valid PLAYLIST URL \"https://www.youtube.com/playlist?list=\" here:", "Magenta", false);
                         Playlist = Console.ReadLine();
+                        if (Playlist.Contains("https://music.youtube.com/playlist?list="))
+                        {
+                            Playlist = "https://www.youtube.com/playlist?list=" + Playlist.Substring(40);
+                        }
                     }
 
                     var driver = StartWebDriver(true , "https://www.youtube.com/");
@@ -301,7 +315,7 @@ namespace DevOps_Project_Webscraper_Tibbo_Van_Leemput
 
                     driver.Navigate().GoToUrl(Playlist);
                     WriteInColor("Getting Youtube playlist", "Green", true, true);
-                    
+                    WriteInColor(Playlist, "Blue");
                     driver.ExecuteScript("document.body.style.zoom='1%'"); // zooming out so spotify loads all songs
                     Thread.Sleep(1000);
 
