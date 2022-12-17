@@ -6,8 +6,13 @@ name: .NET
 on:
   push:
     branches: [ "main" ]
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   pull_request:
     branches: [ "main" ]
+
+    
 
 jobs:
   build:
@@ -39,9 +44,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
         #tag_name: Latest
         #release_name: Release ${{ github.ref }}
-        release_name: Latest
+        #release_name: Latest
         draft: false
         prerelease: false
     - run: ls "./"
