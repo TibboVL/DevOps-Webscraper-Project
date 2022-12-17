@@ -26,24 +26,12 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
     #- run: ls "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: WebscraperTVL
         path: "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0/*"
-##    - run: ls "artifacts/*"
- #   - name: Release
-  #    uses: softprops/action-gh-release@91409e712cf565ce9eff10c87a8d1b11b81757ae
-   #   with:
-#        tag_name: test
- #       # Identify if this is a pre release by checking if the tag name contains -rc, -b, -a
-  #      prerelease: false
-   #     files: "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0/*"
-    #    #files: artifacts/*
-     # env:
-      #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -56,6 +44,10 @@ jobs:
         release_name: Latest
         draft: false
         prerelease: false
+    - run: ls "./"
+    - uses: actions/download-artifact@v2
+      with:
+        name: WebscraperTVL.zip
     - run: ls "./"
     - name: Upload Release Asset
       id: upload-release-asset 
