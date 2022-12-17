@@ -51,9 +51,9 @@ jobs:
         draft: false
         prerelease: false
     - run: ls "./"
-    - uses: actions/download-artifact@v2
+    - uses: montudor/action-zip@v1
       with:
-        name: WebscraperTVL
+        args: zip -qq -r Webscraper.zip "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0/"
     - run: ls "./"
     - name: Upload Release Asset
       id: upload-release-asset 
