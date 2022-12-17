@@ -51,7 +51,8 @@ jobs:
       #run: |
        #   zip -r WebscraperTVL "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
       run: |
-          zip -r WebscraperTVL "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0/*"
+          cd "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
+          zip WebscraperTVL .
     - run: ls "./"
     - name: Upload Release Asset
       id: upload-release-asset 
