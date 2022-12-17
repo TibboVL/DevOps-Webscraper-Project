@@ -39,6 +39,7 @@ jobs:
         tag_name: test
         # Identify if this is a pre release by checking if the tag name contains -rc, -b, -a
         prerelease: false
+        asset_path: ./WebscraperTVL.zip 
         files: artifacts/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
