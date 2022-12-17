@@ -33,6 +33,7 @@ jobs:
       with:
         name: WebscraperTVL
         path: "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0/*"
+    - run: ls "artifacts/*"
     - name: Release
       uses: softprops/action-gh-release@91409e712cf565ce9eff10c87a8d1b11b81757ae
       with:
