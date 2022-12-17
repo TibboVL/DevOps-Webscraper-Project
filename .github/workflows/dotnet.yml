@@ -49,7 +49,7 @@ jobs:
         prerelease: false
     - name: zip # This would actually build your project, using zip for an example artifact
       run: |
-          zip -r my-artifact /home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0
+          zip -r my-artifact "/home/runner/work/DevOps-Webscraper-Project/DevOps-Webscraper-Project/DevOps Project Webscraper Tibbo Van Leemput/bin/Debug/net6.0"
     - run: ls "./"
     - name: Upload Release Asset
       id: upload-release-asset 
